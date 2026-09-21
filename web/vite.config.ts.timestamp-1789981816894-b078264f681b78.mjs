@@ -1,0 +1,10 @@
+// vite.config.ts
+import { defineConfig } from "file:///Users/seri/Desktop/(%E1%84%80%E1%85%A1%E1%84%8E%E1%85%B5%E1%86%BC)%E1%84%86%E1%85%A1%E1%86%B7%E1%84%8A%E1%85%B5/web/node_modules/vite/dist/node/index.js";
+import react from "file:///Users/seri/Desktop/(%E1%84%80%E1%85%A1%E1%84%8E%E1%85%B5%E1%86%BC)%E1%84%86%E1%85%A1%E1%86%B7%E1%84%8A%E1%85%B5/web/node_modules/@vitejs/plugin-react/dist/index.js";
+var vite_config_default = defineConfig({
+  plugins: [react()]
+});
+export {
+  vite_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsidml0ZS5jb25maWcudHMiXSwKICAic291cmNlc0NvbnRlbnQiOiBbImNvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9kaXJuYW1lID0gXCIvVXNlcnMvc2VyaS9EZXNrdG9wLyhcdTExMDBcdTExNjFcdTExMEVcdTExNzVcdTExQkMpXHUxMTA2XHUxMTYxXHUxMUI3XHUxMTBBXHUxMTc1L3dlYlwiO2NvbnN0IF9fdml0ZV9pbmplY3RlZF9vcmlnaW5hbF9maWxlbmFtZSA9IFwiL1VzZXJzL3NlcmkvRGVza3RvcC8oXHUxMTAwXHUxMTYxXHUxMTBFXHUxMTc1XHUxMUJDKVx1MTEwNlx1MTE2MVx1MTFCN1x1MTEwQVx1MTE3NS93ZWIvdml0ZS5jb25maWcudHNcIjtjb25zdCBfX3ZpdGVfaW5qZWN0ZWRfb3JpZ2luYWxfaW1wb3J0X21ldGFfdXJsID0gXCJmaWxlOi8vL1VzZXJzL3NlcmkvRGVza3RvcC8oJUUxJTg0JTgwJUUxJTg1JUExJUUxJTg0JThFJUUxJTg1JUI1JUUxJTg2JUJDKSVFMSU4NCU4NiVFMSU4NSVBMSVFMSU4NiVCNyVFMSU4NCU4QSVFMSU4NSVCNS93ZWIvdml0ZS5jb25maWcudHNcIjtpbXBvcnQgeyBkZWZpbmVDb25maWcgfSBmcm9tICd2aXRlJztcbmltcG9ydCByZWFjdCBmcm9tICdAdml0ZWpzL3BsdWdpbi1yZWFjdCc7XG5cbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7XG4gIHBsdWdpbnM6IFtyZWFjdCgpXSxcbn0pO1xuIl0sCiAgIm1hcHBpbmdzIjogIjtBQUE4VyxTQUFTLG9CQUFvQjtBQUMzWSxPQUFPLFdBQVc7QUFFbEIsSUFBTyxzQkFBUSxhQUFhO0FBQUEsRUFDMUIsU0FBUyxDQUFDLE1BQU0sQ0FBQztBQUNuQixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>속보여 — 브랜드 최종안 v1.1</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+    background:#F2EDE1; color:#1B1815; padding:48px 24px; line-height:1.65; }
+  .wrap { max-width:1100px; margin:0 auto; }
+  .serif { font-family:"Noto Serif KR","AppleMyungjo",serif; }
+  .eyebrow { font-size:12px; letter-spacing:.18em; color:#8A8072; font-weight:700; text-transform:uppercase; }
+  h2 { font-size:15px; font-weight:800; letter-spacing:.08em; color:#6B6154; margin:56px 0 18px; padding-bottom:8px; border-bottom:2px solid #141210; }
+
+  /* hero — 신문 1면 제호 */
+  .hero { text-align:center; padding:30px 0 6px; border-bottom:3px double #141210; }
+  .hero .dateline { font-size:11px; letter-spacing:.14em; color:#8A8072; display:flex; justify-content:space-between; border-bottom:1px solid #C9BFA9; padding-bottom:8px; margin-bottom:26px; }
+  .masthead { font-size:64px; font-weight:900; letter-spacing:.06em; color:#141210; line-height:1.1; }
+  .masthead .bracket { color:#D42B12; }
+  .dual { margin-top:14px; display:flex; justify-content:center; gap:14px; flex-wrap:wrap; }
+  .dual span { font-size:13px; font-weight:800; border:1.5px solid #141210; border-radius:3px; padding:5px 12px; background:#FFFDF6; }
+  .dual span b { color:#D42B12; }
+  .hero .def { font-size:17px; font-weight:800; margin-top:18px; }
+  .hero .def mark { background:rgba(255,233,74,.65); padding:1px 4px; }
+  .hero .sub { font-size:12.5px; color:#8A8072; margin:10px 0 22px; }
+  .sysline { margin:24px auto 0; max-width:860px; background:#FFFDF6; border:1.5px solid #141210; border-radius:4px;
+    padding:15px 20px; font-size:13.5px; text-align:center; box-shadow:4px 4px 0 #141210; }
+  .sysline b { color:#D42B12; }
+
+  .panel { background:#FFFDF6; border:1px solid #D8CFBE; border-radius:6px; padding:22px 24px; }
+  .panel h3 { font-size:12.5px; font-weight:800; color:#8A8072; letter-spacing:.1em; margin-bottom:10px; }
+
+  /* persona */
+  .p-grid { display:grid; grid-template-columns:1fr 1.25fr; gap:16px; }
+  @media (max-width:900px){ .p-grid{ grid-template-columns:1fr; } }
+  .p-def { font-size:20px; font-weight:900; line-height:1.5; }
+  .p-def .red { color:#D42B12; }
+  .p-desc { font-size:13px; color:#5A5348; margin-top:10px; }
+  .register { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .reg { flex:1; min-width:150px; border-radius:5px; padding:11px 13px; font-size:11.5px; }
+  .reg.outer { background:#141210; color:#FFE94A; }
+  .reg.inner { background:#F2EDE1; border:1px solid #C9BFA9; color:#5A5348; }
+  .reg.guard { background:#FFF3F0; border:1px solid #E8B0A3; color:#8A4433; }
+  .reg b { display:block; font-size:12px; margin-bottom:3px; }
+  .dialog { list-style:none; }
+  .dialog li { padding:10px 0; border-bottom:1px dashed #D8CFBE; font-size:13px; }
+  .dialog li:last-child { border-bottom:none; }
+  .dialog .ctx { display:inline-block; min-width:84px; font-size:10.5px; font-weight:800; color:#A0968A; letter-spacing:.04em; vertical-align:top; margin-top:3px; }
+  .dialog .say { display:inline-block; width:calc(100% - 96px); }
+  .dialog .say b { color:#D42B12; }
+
+  /* grammar flow */
+  .flow { display:flex; gap:0; flex-wrap:wrap; background:#FFFDF6; border:1.5px solid #141210; border-radius:6px; overflow:hidden; }
+  .step { flex:1; min-width:150px; padding:16px 16px 14px; border-right:1px solid #E0D6C4; }
+  .step:last-child { border-right:none; }
+  .step .tag { font-size:11px; font-weight:900; letter-spacing:.08em; color:#D42B12; }
+  .step .name { font-size:15.5px; font-weight:900; margin-top:3px; }
+  .step .d { font-size:11px; color:#8A8072; margin-top:5px; }
+  .grammar-note { margin-top:12px; font-size:12.5px; color:#5A5348; background:rgba(255,233,74,.35); border-radius:5px; padding:11px 14px; }
+  .grammar-note b { color:#141210; }
+
+  /* logo boxes */
+  .logo-row { display:flex; gap:16px; flex-wrap:wrap; }
+  .logo-box { flex:1; min-width:250px; background:#FFFDF6; border:1px solid #D8CFBE; border-radius:6px; padding:24px 22px; text-align:center; }
+  .logo-box .cap { font-size:11.5px; color:#8A8072; margin-top:14px; text-align:left; }
+  .logo-box .cap b { color:#141210; }
+  .mast-demo { font-size:38px; font-weight:900; letter-spacing:.04em; }
+  .mast-demo .bracket { color:#D42B12; }
+  .bar-demo { display:inline-block; background:#D42B12; color:#FFF; font-weight:900; font-size:22px; letter-spacing:.2em; padding:8px 18px; border-radius:4px; margin-top:12px; }
+  .hl-demo { font-size:19px; font-weight:800; margin-top:18px; line-height:1.8; }
+  .hl-demo mark { background:rgba(255,233,74,.7); padding:2px 3px; }
+  .hl-demo mark.red { background:rgba(212,43,18,.18); }
+
+  /* KV cards */
+  .kv-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  @media (max-width:1000px){ .kv-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .kv-grid{ grid-template-columns:1fr; } }
+  .kv { border-radius:8px; padding:16px 15px; height:330px; display:flex; flex-direction:column; position:relative; overflow:hidden;
+    background:#FFFDF6; border:1.5px solid #141210; box-shadow:5px 5px 0 rgba(20,18,16,.85); color:#141210; }
+  .kv .role { position:absolute; top:-1px; right:-1px; font-size:9.5px; font-weight:800; padding:5px 10px; background:#141210; color:#FFE94A; border-radius:0 8px 0 8px; letter-spacing:.06em; }
+  .kv .mast { font-size:13px; font-weight:900; letter-spacing:.06em; }
+  .kv .mast .bracket { color:#D42B12; }
+  .kv .dl { font-size:8.5px; color:#A0968A; letter-spacing:.1em; border-bottom:1px solid #141210; padding:3px 0 5px; margin-bottom:10px; display:flex; justify-content:space-between; }
+  .kv .foot { font-size:9.5px; color:#8A8072; margin-top:auto; }
+  .newsbar { display:inline-block; background:#D42B12; color:#FFF; font-weight:900; font-size:10px; letter-spacing:.14em; padding:4px 9px; border-radius:3px; }
+  .kv .headline { font-size:16.5px; font-weight:900; line-height:1.42; margin-top:10px; }
+  .kv .headline mark { background:rgba(255,233,74,.65); padding:1px 2px; }
+  .kv .lede { font-size:10px; color:#5A5348; margin-top:9px; line-height:1.6; }
+  .struct { list-style:none; margin-top:11px; font-size:10.5px; color:#5A5348; }
+  .struct li { padding:4.5px 0; border-top:1px solid #E8E0D0; }
+  .struct b { color:#B4310F; }
+  .stamp { position:absolute; right:10px; bottom:46px; width:64px; height:64px; border:3px solid #D42B12; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; transform:rotate(-12deg); color:#D42B12; font-weight:900; font-size:13px; letter-spacing:.06em; opacity:.9; }
+  .kv .ticker { position:absolute; left:0; right:0; bottom:0; background:#D42B12; color:#FFF; font-size:9.5px; font-weight:800; padding:6px 12px; }
+  .archive { list-style:none; margin-top:10px; font-size:10px; }
+  .archive li { padding:6px 0; border-bottom:1px solid #E8E0D0; display:flex; gap:8px; }
+  .archive .d { color:#A0968A; min-width:32px; }
+  .archive b { font-weight:800; }
+  .archive .tag2 { color:#D42B12; font-weight:900; }
+  .tipbtn { margin-top:10px; background:#141210; color:#FFE94A; border-radius:5px; padding:7px 10px; font-size:10px; font-weight:800; text-align:center; }
+  .correction { margin-top:10px; border:1px dashed #D42B12; border-radius:5px; padding:7px 9px; font-size:9.5px; color:#8A4433; }
+  .correction b { color:#D42B12; }
+
+  /* palette */
+  .pal-row { display:flex; gap:14px; flex-wrap:wrap; }
+  .pal-item { flex:1; min-width:150px; background:#FFFDF6; border:1px solid #D8CFBE; border-radius:6px; overflow:hidden; }
+  .pal-item .c { height:60px; }
+  .pal-item .t { padding:10px 14px; font-size:11.5px; color:#8A8072; }
+  .pal-item .t b { display:block; color:#141210; font-size:12.5px; }
+  .type-demo { margin-top:14px; background:#FFFDF6; border:1px solid #D8CFBE; border-radius:6px; padding:20px 22px; }
+  .type-demo .h { font-size:23px; font-weight:900; }
+  .type-demo .b { font-size:13px; color:#5A5348; margin-top:8px; }
+  .type-demo .cap { font-size:10.5px; color:#A0968A; margin-top:10px; }
+
+  table { width:100%; border-collapse:collapse; background:#FFFDF6; border-radius:6px; overflow:hidden; font-size:12.5px; }
+  th,td { padding:11px 14px; text-align:left; border-bottom:1px solid #E8E0D0; color:#5A5348; }
+  th { background:#141210; color:#F2EDE1; font-size:12px; }
+  td b { color:#D42B12; }
+
+  .exec { margin-top:18px; background:#D42B12; color:#FFF6E8; border-radius:6px; padding:18px 22px; font-size:13.5px; font-weight:600; box-shadow:5px 5px 0 rgba(20,18,16,.85); }
+  .exec b { font-weight:900; color:#FFE94A; }
+  .foot-note { margin-top:40px; font-size:11.5px; color:#A0968A; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="dateline"><span>BRAND FINAL v1.1</span><span>2026. 09. 03 · 창간 준비호</span><span>제1판</span></div>
+    <div class="masthead serif"><span class="bracket">「</span>속보여<span class="bracket">」</span></div>
+    <div class="dual">
+      <span>읽기 ① <b>속보</b>—여 · 네 연애에 속보 떴어</span>
+      <span>읽기 ② 속—<b>보여</b> · 걔 속, 이제 보여</span>
+    </div>
+    <div class="def serif">네 연애만 취재하는 <mark>전담 뉴스룸</mark></div>
+    <div class="sub">SOKBOYEO · sokboyeo.com / sokboyeo.kr / sokbo.io 미등록 확인 (2026-09-03)</div>
+  </div>
+  <div class="sysline">
+    시스템 한 줄 — <b>제보</b>(네 촉)가 들어오면 <b>취재</b>(사주×데이터)하고, <b>기사</b>([속보]·[단독])로 남긴다. 빗나가면 <b>[정정]</b>, 이어지면 <b>연재</b>.
+  </div>
+
+  <h2>01 · 페르소나 — "내 연애 전담 기자"</h2>
+  <div class="p-grid">
+    <div class="panel">
+      <h3>정의</h3>
+      <div class="p-def serif">"제보 접수.<br><span class="red">취재하고 올게</span> —<br>기사는 팩트로만 쓸게."</div>
+      <div class="p-desc">점쟁이도, 팩폭 언니(EX-Ray)도, 계측기(ONDO)도 아니다. <b>나만을 위해 움직이는 전담 기자.</b> 유저는 제보자(촉을 제보), 서비스는 취재(사주·데이터)와 보도(리포트)를 담당 — 단정의 주체는 언제나 제보자의 촉이고, 기자는 확인된 것만 쓴다.</div>
+      <div class="register">
+        <div class="reg outer"><b>겉 = 헤드라인체</b>짧고 굵게 · "[속보] 걔, 너 의식 중"</div>
+        <div class="reg inner"><b>속 = 기사체</b>리드→팩트→분석→전망 · 근거 명시</div>
+        <div class="reg guard"><b>보호 모드</b>이별 직후 취재 중단 · 존댓말 전환</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>대사 샘플 — 상황별 톤</h3>
+      <ul class="dialog">
+        <li><span class="ctx">유입 (겉)</span><span class="say">"촉 왔어? <b>제보해.</b> 취재는 우리가 해."</span></li>
+        <li><span class="ctx">무료 1면</span><span class="say">"1면 나왔어 — 네 연애 스타일, <b>늦게 터지는 특종형.</b>"</span></li>
+        <li><span class="ctx">리포트 (속)</span><span class="say">"취재 결과부터. 확인된 신호 3, 가능한 해석 2, 다음 2주 확인 취재 2, 지금 할 행동 1."</span></li>
+        <li><span class="ctx">재방문</span><span class="say">"지난주 제보, <b>사실로 확인.</b> [속보] 나갔고 아카이브에 실었어."</span></li>
+        <li><span class="ctx">빗나감</span><span class="say">"<b>[정정]</b> 지난 분석 일부 정정할게. 틀린 걸 틀렸다고 쓰니까 맞는 걸 믿을 수 있는 거야."</span></li>
+        <li><span class="ctx">보호 모드</span><span class="say">"오늘은 취재 내려놓을게요. 기사보다 당신이 먼저예요."</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>02 · 뉴스룸 그래머 — '단정 리스크'를 문법으로 해소</h2>
+  <div class="flow">
+    <div class="step"><div class="tag">STEP 1</div><div class="name">제보</div><div class="d">유저의 촉이 취재의 시작 — 단정 주체는 유저</div></div>
+    <div class="step"><div class="tag">STEP 2</div><div class="name">취재</div><div class="d">사주(만세력 계산) × 데이터(신호) — 근거 수집</div></div>
+    <div class="step"><div class="tag">STEP 3</div><div class="name">[확인 중]</div><div class="d">부족한 맥락은 추가 질문 — 기사화 보류 딱지</div></div>
+    <div class="step"><div class="tag">STEP 4</div><div class="name">[속보]·[단독]</div><div class="d">확인된 것만 보도 — 결제 리포트</div></div>
+    <div class="step"><div class="tag">STEP 5</div><div class="name">[정정]</div><div class="d">빗나감을 공식 기록 — 정직이 곧 차별화</div></div>
+    <div class="step"><div class="tag">STEP 6</div><div class="name">연재</div><div class="d">관계 = 연재 기사, 아카이브 = 기억</div></div>
+  </div>
+  <div class="grammar-note"><b>이 그래머가 리스크 해독제다.</b> "속을 보여준다"는 이름의 단정 뉘앙스는 [확인 중]·[정정]이라는 저널리즘 관례가 중화한다 — 뉴스는 원래 '확인된 것만, 틀리면 정정'이 규칙이니까. 동시에 촉이와 안의 핵심 자산(유저=단정 주체, 적중 기록)은 '제보·아카이브'로 흡수됐다. 그리고 <b>연재·아카이브 = "동의 기반 기억"</b> — 신문은 원래 기록 매체다. 무상태 경쟁자가 못 따라오는 우리 전략이 메타포 안에 내장된다.</div>
+
+  <h2>03 · 로고 — 제호 · 속보 자막바 · 형광펜</h2>
+  <div class="logo-row">
+    <div class="logo-box">
+      <div class="mast-demo serif" style="margin-top:14px;"><span class="bracket">「</span>속보여<span class="bracket">」</span></div>
+      <div class="cap"><b>제호(로고타입)</b> — 신문 제호 문법: 극굵은 명조 + 낫표 「」. 낫표가 심볼을 겸해 앱 아이콘은 「속」 단독으로.</div>
+    </div>
+    <div class="logo-box">
+      <div class="bar-demo">속 보 여</div>
+      <div class="cap"><b>속보 자막바(서브 심볼)</b> — 빨간 자막바는 모든 카드·푸시·광고의 공통 헤더. 화면 어디서든 0.5초 만에 식별.</div>
+    </div>
+    <div class="logo-box">
+      <div class="hl-demo serif">걔 마음의 <mark>밑줄 친 부분</mark>만<br><mark class="red">비쳐 보이게</mark></div>
+      <div class="cap"><b>형광펜 하이라이트(비침 요소)</b> — 네가 짚은 '속-보여'의 투시감은 반투명 형광펜으로 구현: 전부 보이는 게 아니라 <b>중요한 문장에만 밑줄이 비친다</b> = 단정 아닌 신호 강조.</div>
+    </div>
+  </div>
+
+  <h2>04 · 키비주얼 — 카드 4종이 곧 퍼널</h2>
+  <div class="kv-grid">
+
+    <div class="kv">
+      <span class="role">무료 · 유입</span>
+      <div class="mast serif"><span class="bracket">「</span>속보여<span class="bracket">」</span></div>
+      <div class="dl"><span>내 연애 1면</span><span>창간호</span></div>
+      <div class="headline serif">타고난 연애 스타일:<br><mark>늦게 터지는 특종형</mark></div>
+      <div class="lede">판이 다 깔린 뒤에야 확신하는 타입. 대신 오보가 드물다 — 술(戌)의 감각.</div>
+      <div class="foot">생년월일 10초 → 내 1면 발행 · 공유</div>
+    </div>
+
+    <div class="kv">
+      <span class="role">유료 SKU 1 · 전환</span>
+      <span class="newsbar">단독</span>
+      <div class="headline serif">이 사람과 나,<br>지금 무슨 사이</div>
+      <ul class="struct">
+        <li><b>리드</b> — 한 문장 요약</li>
+        <li><b>팩트 3</b> — 확인된 신호</li>
+        <li><b>분석 2</b> — 가능한 해석</li>
+        <li><b>확인 취재 2</b> — 2주 안에 볼 것</li>
+        <li><b>전망 1</b> — 지금 할 행동</li>
+      </ul>
+      <div class="foot">기사체 · 근거 명시 · 영구 소장</div>
+    </div>
+
+    <div class="kv">
+      <span class="role">결과 카드 · 바이럴</span>
+      <span class="newsbar">속보</span>
+      <div class="headline serif">걔, 너 의식하는 중 —<br>네 제보 <mark>사실로 확인</mark></div>
+      <div class="lede">근거 신호 3건 · 궁합 흐름 상승 구간<br>제보 D+21 · 21:41 보도</div>
+      <div class="stamp">확인</div>
+      <div class="correction"><b>[정정]</b> 8/23 분석 일부 정정 — 그래서 이 보도는 믿을 수 있음</div>
+      <div class="ticker">▶ 다음 속보: 연락 타이밍 열리는 날</div>
+    </div>
+
+    <div class="kv">
+      <span class="role">연재 · 리텐션</span>
+      <div class="mast serif">J와 나 <span style="color:#A0968A; font-weight:600; font-size:10px;">— 연재 12주차 · 기사 7건</span></div>
+      <div class="dl"><span>아카이브</span><span>적중 4 · 정정 1</span></div>
+      <ul class="archive">
+        <li><span class="d">8/14</span><span><span class="tag2">[속보]</span> <b>"나 좋아하는 듯"</b> → 확인</span></li>
+        <li><span class="d">8/23</span><span><span class="tag2">[정정]</span> "요즘 식은 듯" → 정정</span></li>
+        <li><span class="d">9/02</span><span><span class="tag2">[확인중]</span> "다시 흐름 옴"</span></li>
+      </ul>
+      <div class="tipbtn">✎ 촉 왔어? 새 제보 넣기</div>
+      <div class="foot">연재가 곧 관계 기록 — 기억의 UI</div>
+    </div>
+  </div>
+
+  <h2>05 · 팔레트 · 타이포</h2>
+  <div class="pal-row">
+    <div class="pal-item"><div class="c" style="background:#F2EDE1;"></div><div class="t"><b>신문지 #F2EDE1</b>기본 바탕 — 갱지의 아이보리</div></div>
+    <div class="pal-item"><div class="c" style="background:#141210;"></div><div class="t"><b>잉크 #141210</b>제호·본문 — 인쇄 잉크의 검정</div></div>
+    <div class="pal-item"><div class="c" style="background:#D42B12;"></div><div class="t"><b>속보 레드 #D42B12</b>자막바·낫표·스탬프 — 시그널</div></div>
+    <div class="pal-item"><div class="c" style="background:#FFE94A;"></div><div class="t"><b>형광펜 #FFE94A</b>반투명 하이라이트 — '비침' 요소</div></div>
+    <div class="pal-item"><div class="c" style="background:#FFFDF6;"></div><div class="t"><b>지면 #FFFDF6</b>카드·리포트 지면</div></div>
+  </div>
+  <div class="type-demo">
+    <div class="h serif">헤드라인은 극굵은 명조 — "걔, 너 의식하는 중"</div>
+    <div class="b">본문은 담백한 고딕 — "확인된 신호 3건을 근거로 보도합니다. 다음 취재는 2주 안에."</div>
+    <div class="cap">신문의 서체 위계를 그대로: 명조(제목·감정) × 고딕(본문·근거) · 회피: 보라 수정구슬 · 핑크 하트 · 파스텔 몽글</div>
+  </div>
+
+  <h2>06 · 전략 정합성 — 각 요소가 꽂히는 곳</h2>
+  <table>
+    <tr><th>브랜드 요소</th><th>전략 기능</th><th>근거</th></tr>
+    <tr><td><b>「속보여」</b> 중의적 제호</td><td>유입 훅 · CAC</td><td>속보(긴급성)와 속-보임(궁금증) 이중 자극 — 유저 확정 선택</td></tr>
+    <tr><td><b>내 연애 1면</b> (무료)</td><td>바이럴 유입 · 콜드스타트</td><td>생년월일 10초 → 사주 기반 1면 발행 · 3사가 비운 '셀프 공유 카드' 자리</td></tr>
+    <tr><td><b>[단독] 리포트</b> (SKU 1)</td><td>첫 결제 · 전환</td><td>리드·팩트·분석·확인·전망 = 기사 구조가 곧 화법 원칙(신호·해석·확인·행동)</td></tr>
+    <tr><td><b>연재·아카이브</b></td><td>리텐션 · LTV · 해자</td><td>신문 = 기록 매체 — "동의 기반 기억"이 메타포에 내장, 무상태 경쟁자 복제 불가</td></tr>
+    <tr><td><b>[속보]</b> 푸시</td><td>재방문 트리거</td><td>관계 상태 변화·시기 도래의 브랜드화된 알림</td></tr>
+    <tr><td><b>[정정]</b> 관례</td><td>신뢰 · 리스크 방어</td><td>빗나감의 공식 기록 = 단정 리스크 해독 + 정직 차별화 (재회 컨설팅 역포지셔닝)</td></tr>
+    <tr><td><b>보호 모드</b></td><td>취약 고객 보호</td><td>이별 직후 취재 중단·존댓말 전환 — 자극의 한계선</td></tr>
+  </table>
+
+  <div class="exec">
+    확정 시 실행 순서 — ① KIPRIS 상표 + 도메인(sokboyeo.com/.kr, sokbo.io) 확보 ② 제호·자막바 로고 정식화 ③ <b>'내 연애 1면' 실물 프로토타입</b>(= 첫 바이럴 실험이자 랜딩) ④ 헤드라인체/기사체 화법 가이드 → <b>[단독] 리포트(SKU 1) 설계로 직결</b>
+  </div>
+
+  <div class="foot-note">v1.1 · 2026-09-03 · 네이밍 확정: 속보여 (유저 결정) · 전제: 포지셔닝_전략.md v0.3 · 본 보드가 이후 모든 디자인·카피의 기준 · 이전 안(촉이와 v1.0)의 자산은 '제보·아카이브'로 흡수</div>
+</div>
+</body>
+</html>

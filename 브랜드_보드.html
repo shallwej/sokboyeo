@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>브랜드 컨셉 보드 v0.2</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+    background:#131110; color:#EDE7DC; padding:48px 24px; line-height:1.6;
+  }
+  .wrap { max-width:1100px; margin:0 auto; }
+  .eyebrow { font-size:12px; letter-spacing:.18em; color:#8A8072; font-weight:700; text-transform:uppercase; }
+  h1 { font-size:28px; font-weight:800; margin:6px 0 4px; color:#FFF6E8; }
+  .sub { color:#9A9184; font-size:14px; margin-bottom:8px; }
+  .pivot { display:inline-block; background:#2A1510; color:#FF6A45; border:1px solid #57291D; border-radius:999px; font-size:12px; font-weight:800; padding:5px 14px; margin-bottom:36px; }
+  h2 { font-size:15px; font-weight:800; letter-spacing:.08em; color:#B8AD9C; margin:52px 0 16px; padding-bottom:8px; border-bottom:2px solid #35302A; }
+
+  /* two-layer */
+  .layer-outer { border:2px dashed #FF5A36; border-radius:20px; padding:20px 22px; background:#1B1512; }
+  .layer-outer .tag { color:#FF6A45; font-weight:800; font-size:13px; letter-spacing:.06em; }
+  .layer-outer .desc { font-size:12.5px; color:#C9BCA8; margin:4px 0 14px; }
+  .layer-inner { border:1px solid #4A4438; border-radius:14px; padding:16px 18px; background:#211E19; }
+  .layer-inner .tag { color:#D9C89A; font-weight:800; font-size:13px; letter-spacing:.06em; }
+  .layer-inner .desc { font-size:12.5px; color:#B0A692; margin-top:4px; }
+  .layer-note { font-size:12px; color:#8A8072; margin-top:12px; }
+
+  /* spectrum */
+  .spectrum { background:#1B1815; border:1px solid #35302A; border-radius:16px; padding:24px 26px; }
+  .spec-bar { position:relative; height:8px; border-radius:99px; margin:34px 8px 10px;
+    background:linear-gradient(90deg,#7C9A6D 0%,#D9B36C 45%,#FF5A36 100%); }
+  .spec-dot { position:absolute; top:50%; transform:translate(-50%,-50%); width:14px; height:14px; border-radius:50%; background:#FFF6E8; border:3px solid #131110; }
+  .spec-label { position:absolute; top:-26px; transform:translateX(-50%); font-size:11.5px; font-weight:700; color:#C9BCA8; white-space:nowrap; }
+  .spec-label.below { top:auto; bottom:-26px; color:#8A8072; font-weight:600; }
+  .spec-ends { display:flex; justify-content:space-between; font-size:11.5px; color:#8A8072; margin:26px 4px 0; }
+
+  /* naming cards */
+  .names { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:960px){ .names{ grid-template-columns:1fr; } }
+  .ncard { border-radius:18px; overflow:hidden; border:1px solid #35302A; background:#1B1815; display:flex; flex-direction:column; }
+  .ncard .head { padding:18px 20px 4px; display:flex; align-items:center; justify-content:space-between; }
+  .rank { font-size:10.5px; font-weight:800; letter-spacing:.1em; padding:4px 10px; border-radius:999px; }
+  .r1 { background:#FF5A36; color:#160B07; } .r2 { background:#4A4438; color:#D9CDB8; } .r3 { background:#2A2723; color:#8A8072; }
+  .symbol { display:flex; justify-content:center; padding:8px 0 0; }
+  .wordmark { text-align:center; font-weight:900; letter-spacing:.02em; margin-top:2px; }
+  .meaning { padding:14px 20px 0; font-size:13px; color:#B0A692; }
+  .meaning b { color:#EDE7DC; }
+  .tagline { padding:10px 20px 0; font-size:13.5px; font-weight:800; }
+  .pal { display:flex; gap:6px; padding:14px 20px 2px; }
+  .sw { width:26px; height:26px; border-radius:8px; border:1px solid rgba(255,255,255,.12); }
+  .note { padding:12px 20px 18px; font-size:11.5px; color:#8A8072; margin-top:auto; }
+  .kvzone { display:flex; justify-content:center; padding:18px 0 4px; }
+  .kv { width:186px; height:300px; border-radius:16px; padding:16px 15px; display:flex; flex-direction:column; box-shadow:0 12px 28px rgba(0,0,0,.45); position:relative; overflow:hidden; }
+  .kv .brand { font-size:11px; font-weight:800; letter-spacing:.12em; }
+  .kv .head-line { font-weight:900; line-height:1.4; }
+  .kv .foot { font-size:10px; margin-top:auto; opacity:.85; }
+
+  /* A 촉이와 */
+  .kvA { background:#121212; border:1px solid #2E2A26; color:#FFF6E8; }
+  .kvA .head-line { font-size:21px; margin-top:26px; }
+  .stamp {
+    position:absolute; right:12px; top:110px; width:74px; height:74px; border:3px solid #FF5A36; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; transform:rotate(-14deg);
+    color:#FF5A36; font-weight:900; font-size:17px; letter-spacing:.1em; opacity:.95;
+  }
+  .hitchip { display:inline-block; margin-top:16px; background:#241713; color:#FFB39E; border:1px solid #57291D; border-radius:8px; font-size:10.5px; font-weight:700; padding:5px 9px; }
+
+  /* B 속보여 */
+  .kvB { background:#F7F3EA; color:#141210; }
+  .kvB .newsbar { display:inline-block; background:#D42B12; color:#FFF; font-weight:900; font-size:10.5px; letter-spacing:.14em; padding:4px 9px; border-radius:3px; }
+  .kvB .head-line { font-size:20px; margin-top:14px; font-family:"Noto Serif KR","Apple SD Gothic Neo",serif; }
+  .kvB .subline { font-size:10.5px; color:#6B6154; margin-top:10px; border-top:1px solid #D8CFBE; padding-top:8px; }
+  .kvB .ticker { position:absolute; left:0; right:0; bottom:0; background:#D42B12; color:#FFF; font-size:10px; font-weight:800; padding:7px 12px; letter-spacing:.04em; }
+
+  /* C 까봄 */
+  .kvC { background:#181512; border:1px solid #3A332A; color:#F2E6C8; }
+  .kvC .head-line { font-size:21px; margin-top:20px; }
+  .crack { margin:18px auto 0; }
+
+  table { width:100%; border-collapse:collapse; background:#1B1815; border-radius:14px; overflow:hidden; font-size:12.5px; }
+  th,td { padding:11px 14px; text-align:left; border-bottom:1px solid #2A2723; color:#C9BCA8; }
+  th { background:#211E19; color:#9A9184; font-size:12px; }
+  td b.good { color:#8FBF7A; } td b.bad { color:#FF7A5C; } td b.mid { color:#D9B36C; }
+  .verdict { margin-top:18px; background:#FF5A36; color:#1B0D08; border-radius:14px; padding:18px 22px; font-size:14px; font-weight:600; }
+  .verdict b { font-size:15.5px; font-weight:900; }
+  .lines { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .line-chip { flex:1; min-width:220px; background:#1B1815; border:1px solid #35302A; border-radius:12px; padding:13px 15px; font-size:12px; color:#B0A692; }
+  .line-chip b { display:block; color:#EDE7DC; font-size:12.5px; margin-bottom:3px; }
+  .foot-note { margin-top:40px; font-size:11.5px; color:#6B6154; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Brand Concept Board</div>
+  <h1>브랜드 컨셉 보드 <span style="color:#FF5A36;">v0.2</span></h1>
+  <div class="sub">2026-09-03 · v0.1 피드백 반영: "너무 몽글몽글 서정적" → 자극 피벗</div>
+  <div class="pivot">⚡ 원칙: 겉은 자극, 속은 다정 — "겉바속촉"</div>
+
+  <h2>01 · 두 겹 구조 — 자극은 어디에, 다정함은 어디에</h2>
+  <div class="layer-outer">
+    <div class="tag">겉 레이어 = 훅 · 무료 카드 · 광고 · 네이밍</div>
+    <div class="desc">자극·직설·반말. 새벽 2시에 엄지를 멈추게 하는 문장. — EX-Ray 후기 언어("팩폭·오열")가 증명한 이 시장의 감정 온도. CAC를 결정하는 층.</div>
+    <div class="layer-inner">
+      <div class="tag">속 레이어 = 유료 리포트 · 관계 트래커 · 재방문</div>
+      <div class="desc">다정한 명료함 · 근거 · 기억. "지난번 그 촉, 맞았어?" — LTV와 신뢰를 결정하는 층. v0.1의 페르소나는 폐기가 아니라 이 안쪽으로 이동.</div>
+    </div>
+    <div class="layer-note">EX-Ray도 같은 구조다 — 겉은 "걔 속마음 다 읽어줄게", 속은 "사주만 보고 결정하면 안 됩니다". 자극과 신뢰는 배타적이지 않고 층이 다를 뿐.</div>
+  </div>
+
+  <h2>02 · 자극도 스펙트럼 — v0.1안은 어디에 있었나</h2>
+  <div class="spectrum">
+    <div class="spec-bar">
+      <div class="spec-dot" style="left:6%; opacity:.45;"></div><div class="spec-label" style="left:6%; opacity:.55;">새록</div>
+      <div class="spec-dot" style="left:14%; opacity:.45;"></div><div class="spec-label below" style="left:14%; opacity:.65;">사이봄</div>
+      <div class="spec-dot" style="left:24%; opacity:.45;"></div><div class="spec-label" style="left:24%; opacity:.55;">달무리</div>
+      <div class="spec-dot" style="left:44%;"></div><div class="spec-label below" style="left:44%;">ONDO "재보세요"</div>
+      <div class="spec-dot" style="left:66%; background:#FFD9CD;"></div><div class="spec-label" style="left:66%;">까봄</div>
+      <div class="spec-dot" style="left:78%; background:#FF8A6B;"></div><div class="spec-label below" style="left:78%;">촉이와</div>
+      <div class="spec-dot" style="left:88%; background:#FF5A36;"></div><div class="spec-label" style="left:88%;">속보여</div>
+      <div class="spec-dot" style="left:96%; background:#D42B12;"></div><div class="spec-label below" style="left:96%;">EX-Ray "팩폭"</div>
+    </div>
+    <div class="spec-ends"><span>◂ 서정 (v0.1 — 리텐션엔 맞지만 훅이 약함)</span><span>자극 (v0.2 — 이 구간에서 다시 제안) ▸</span></div>
+  </div>
+
+  <h2>03 · 네이밍 3안 (자극 버전) + 키비주얼</h2>
+  <div class="names">
+
+    <!-- A 촉이와 -->
+    <div class="ncard">
+      <div class="head"><span class="eyebrow">A안</span><span class="rank r1">1순위 추천</span></div>
+      <div class="symbol">
+        <svg viewBox="0 0 140 84" width="150" height="90">
+          <circle cx="70" cy="44" r="6" fill="#FF5A36"/>
+          <path d="M70,44 m0,-14 a14,14 0 0 1 12.1,7" fill="none" stroke="#FF5A36" stroke-width="3" stroke-linecap="round"/>
+          <path d="M70,44 m0,-24 a24,24 0 0 1 20.8,12" fill="none" stroke="#FF8A6B" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+          <path d="M70,44 m0,-34 a34,34 0 0 1 29.4,17" fill="none" stroke="#FFB39E" stroke-width="3" stroke-linecap="round" opacity=".4"/>
+          <path d="M56,20 L48,34 L56,34 L46,50" fill="none" stroke="#FFD84D" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="wordmark" style="font-size:31px; color:#FF5A36;">촉이와</div>
+      <div class="meaning"><b>"나 촉 왔어"</b> — 이 시장 고객의 실제 첫 문장. 서비스가 단정하는 게 아니라 <b>유저의 촉을 사주·데이터로 검증</b>하는 프레임. 촉의 적중 여부를 기록 = 관계 트래커의 자극 버전. "사람 보는 촉"으로 비연애 확장.</div>
+      <div class="tagline" style="color:#FF8A6B;">"촉 왔어? 3분이면 확인해."</div>
+      <div class="pal">
+        <div class="sw" style="background:#121212"></div><div class="sw" style="background:#FF5A36"></div><div class="sw" style="background:#FFD84D"></div><div class="sw" style="background:#FFF6E8"></div><div class="sw" style="background:#57291D"></div>
+      </div>
+      <div class="kvzone">
+        <div class="kv kvA">
+          <div class="brand" style="color:#FF5A36;">촉이와</div>
+          <div class="head-line">그 촉,<br>맞았어.</div>
+          <div class="stamp">적중</div>
+          <div class="hitchip">이번 달 내 촉 적중 4/5</div>
+          <div class="foot" style="color:#9A9184;">사주로 근거부터 · 다음 촉도 기록해줄게</div>
+        </div>
+      </div>
+      <div class="note">단정의 주체가 '유저의 촉' → 자극적인데 화법 원칙·법적 리스크는 낮음 · 검색 충돌 없음(동명 트로트곡만 존재 — 표현이 살아있다는 방증)</div>
+    </div>
+
+    <!-- B 속보여 -->
+    <div class="ncard">
+      <div class="head"><span class="eyebrow">B안</span><span class="rank r2">2순위</span></div>
+      <div class="symbol">
+        <svg viewBox="0 0 140 84" width="150" height="90">
+          <rect x="34" y="26" width="26" height="20" rx="3" fill="#D42B12"/>
+          <text x="47" y="41" font-size="13" font-weight="900" fill="#FFF" text-anchor="middle" font-family="sans-serif">속</text>
+          <rect x="66" y="26" width="42" height="4" rx="2" fill="#EDE7DC"/>
+          <rect x="66" y="34" width="34" height="4" rx="2" fill="#B0A692"/>
+          <rect x="66" y="42" width="38" height="4" rx="2" fill="#8A8072"/>
+          <path d="M34,56 h74" stroke="#D42B12" stroke-width="3"/>
+        </svg>
+      </div>
+      <div class="wordmark" style="font-size:31px; color:#EDE7DC;">속보여</div>
+      <div class="meaning">이중 의미 — <b>"[속보] 떴어"</b> + <b>"걔 속, 보여"</b>. 관계 상태 변화를 속보 헤드라인 카드로 발행. 뉴스 포맷 자체가 공유 본능을 자극 — 바이럴 카드 문법이 이름에 내장.</div>
+      <div class="tagline" style="color:#D9B36C;">"네 연애에 속보 떴어."</div>
+      <div class="pal">
+        <div class="sw" style="background:#F7F3EA"></div><div class="sw" style="background:#D42B12"></div><div class="sw" style="background:#141210"></div><div class="sw" style="background:#D9B36C"></div><div class="sw" style="background:#6B6154"></div>
+      </div>
+      <div class="kvzone">
+        <div class="kv kvB">
+          <span class="newsbar">속보</span>
+          <div class="head-line">걔, 요즘<br>너 의식하고 있음</div>
+          <div class="subline">근거 신호 3건 · 궁합 흐름 상승 구간<br>오늘 21:41 업데이트</div>
+          <div class="ticker">▶ 다음 속보: 연락 타이밍 열리는 날</div>
+        </div>
+      </div>
+      <div class="note">훅·바이럴 최강 · 단 "보여준다" 단정 뉘앙스와 투시 프레임 → 화법·기대 관리 비용 · 검색 충돌 없음</div>
+    </div>
+
+    <!-- C 까봄 -->
+    <div class="ncard">
+      <div class="head"><span class="eyebrow">C안</span><span class="rank r3">3순위</span></div>
+      <div class="symbol">
+        <svg viewBox="0 0 140 84" width="150" height="90">
+          <path d="M70,12 a30,30 0 0 0 -14,56 l6,-12 -8,-8 10,-6 -4,-12 Z" fill="none" stroke="#F2C879" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M70,12 a30,30 0 0 1 14,56 l-6,-12 8,-8 -10,-6 4,-12 Z" fill="none" stroke="#FF8A6B" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="wordmark" style="font-size:31px; color:#F2C879;">까봄</div>
+      <div class="meaning">까다 + 봄 — <b>"사주 까보자"</b>는 실제 구어. v0.1 '봄(보다)'의 자극 버전. 궁합·속마음·시기를 '깐다'는 개봉 의식(리포트 오픈 연출)과 결합.</div>
+      <div class="tagline" style="color:#F2C879;">"오늘, 걔랑 나 까본다."</div>
+      <div class="pal">
+        <div class="sw" style="background:#181512"></div><div class="sw" style="background:#F2C879"></div><div class="sw" style="background:#FF8A6B"></div><div class="sw" style="background:#F2E6C8"></div><div class="sw" style="background:#3A332A"></div>
+      </div>
+      <div class="kvzone">
+        <div class="kv kvC">
+          <div class="brand" style="color:#F2C879;">까봄</div>
+          <div class="head-line">오늘,<br>깐다</div>
+          <svg class="crack" viewBox="0 0 90 90" width="86" height="86">
+            <path d="M45,6 a39,39 0 0 0 -18,72 l7,-15 -10,-10 13,-8 -5,-15 Z" fill="none" stroke="#F2C879" stroke-width="3"/>
+            <path d="M45,6 a39,39 0 0 1 18,72 l-7,-15 10,-10 -13,-8 5,-15 Z" fill="none" stroke="#FF8A6B" stroke-width="3"/>
+          </svg>
+          <div class="foot" style="color:#8A8072;">궁합부터 속마음까지 · 열어보는 재미</div>
+        </div>
+      </div>
+      <div class="note">에너지 있으나 '깐다'의 공격적 뉘앙스가 관계 서비스와 미묘한 긴장 · 검색 충돌 없음(카봄은 차량 앱)</div>
+    </div>
+  </div>
+
+  <h2>04 · 판단 근거</h2>
+  <table>
+    <tr><th>기준</th><th>촉이와</th><th>속보여</th><th>까봄</th></tr>
+    <tr><td>훅 파워 (엄지 멈춤)</td><td><b class="good">◎</b> 고객의 실제 언어</td><td><b class="good">◎</b> 속보 포맷</td><td><b class="mid">○</b></td></tr>
+    <tr><td>단정 리스크 (화법 원칙·법)</td><td><b class="good">낮음 — 단정 주체가 유저</b></td><td><b class="bad">중 — "보여" 단정 뉘앙스</b></td><td><b class="mid">중 — 공격적 뉘앙스</b></td></tr>
+    <tr><td>'기억' 컨셉 결합</td><td><b class="good">◎ 촉 적중 기록 = 트래커</b></td><td><b class="mid">△ 후속 속보로 가능</b></td><td><b class="mid">△</b></td></tr>
+    <tr><td>확장성 (비연애·수직)</td><td><b class="good">◎ 사람 보는 촉, 이직 촉</b></td><td><b class="mid">○</b></td><td><b class="mid">○</b></td></tr>
+    <tr><td>키비주얼·바이럴 자산</td><td><b class="mid">○ 적중 스탬프</b></td><td><b class="good">◎ 속보 카드</b></td><td><b class="mid">○ 개봉 연출</b></td></tr>
+    <tr><td>선점 (검색 기준)</td><td>깨끗</td><td>깨끗</td><td>깨끗</td></tr>
+  </table>
+  <div class="verdict">
+    추천: <b>A안 촉이와</b> — 자극과 신뢰가 충돌하지 않는 유일한 구조. 서비스가 "걔 마음 이래" 하고 단정하는 게 아니라 <b>"네 촉이 맞는지, 사주랑 데이터로 확인하고 — 맞았는지까지 기억해줄게"</b>. 겉은 자극(촉·적중·직설 반말), 속은 우리 전략 그대로(근거·기록·다정한 명료함). B안 속보여의 <b>'[속보] 카드' 포맷은 촉이와의 결과 카드 문법으로 흡수</b> — "[촉 적중] 걔, 너 의식하는 중" 형태로 두 안의 장점을 합침.
+  </div>
+
+  <div class="lines">
+    <div class="line-chip"><b>지키는 선 ① 단정의 주체는 유저</b>광고·카드에서도 "걔 너 좋아함 확정" 금지 — "네 촉이 맞는지 확인해" 프레임 유지</div>
+    <div class="line-chip"><b>지키는 선 ② 취약 상황 톤 다운</b>이별 직후·재회 플로우에선 자극 카피 끄고 속 레이어 화법으로</div>
+    <div class="line-chip"><b>지키는 선 ③ 상대 비하 금지</b>자극은 내 촉과 내 관계에 대한 것 — 상대방 조롱·감시 조장 표현 금지</div>
+  </div>
+
+  <div class="foot-note">v0.1(사이봄·달무리·새록)은 폐기 아님 — 서정 레이어는 유료 리포트 내부 화법·무드로 이동. 이름 확정 → 상표(KIPRIS)·도메인 확인 → 정식 로고·카드 템플릿.</div>
+</div>
+</body>
+</html>

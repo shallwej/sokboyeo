@@ -1,0 +1,105 @@
+import { Chart, Element, ELEMENT_KO, ELEMENT_ORDER, GAN_ELEMENT, GAN_KO, ZHI_KO } from './manse';
+
+export type Relation = '비화' | '식상' | '인성' | '재성' | '관성';
+
+export const GAN_HAP: Record<string, string> = { 甲: '己', 己: '甲', 乙: '庚', 庚: '乙', 丙: '辛', 辛: '丙', 丁: '壬', 壬: '丁', 戊: '癸', 癸: '戊' };
+export const GAN_CHUNG: Record<string, string> = { 甲: '庚', 庚: '甲', 乙: '辛', 辛: '乙', 丙: '壬', 壬: '丙', 丁: '癸', 癸: '丁' };
+export const ZHI_HAP: Record<string, string> = { 子: '丑', 丑: '子', 寅: '亥', 亥: '寅', 卯: '戌', 戌: '卯', 辰: '酉', 酉: '辰', 巳: '申', 申: '巳', 午: '未', 未: '午' };
+export const ZHI_CHUNG: Record<string, string> = { 子: '午', 午: '子', 丑: '未', 未: '丑', 寅: '申', 申: '寅', 卯: '酉', 酉: '卯', 辰: '戌', 戌: '辰', 巳: '亥', 亥: '巳' };
+export const SAMHAP: Record<string, Element> = { 申: '水', 子: '水', 辰: '水', 亥: '木', 卯: '木', 未: '木', 寅: '火', 午: '火', 戌: '火', 巳: '金', 酉: '金', 丑: '金' };
+const SHENG: Record<Element, Element> = { 木: '火', 火: '土', 土: '金', 金: '水', 水: '木' };
+const KE: Record<Element, Element> = { 木: '土', 土: '水', 水: '火', 火: '金', 金: '木' };
+
+export function relationOf(me: Element, other: Element): Relation {
+  if (me === other) return '비화';
+  if (SHENG[me] === other) return '식상';
+  if (SHENG[other] === me) return '인성';
+  if (KE[me] === other) return '재성';
+  return '관성';
+}
+
+export const RELATION_KO: Record<Relation, { label: string; detail: string; delta: number }> = {
+  비화: { label: '닮은 기운', detail: '편하고 말이 통하지만, 자극과 긴장은 약한 조합이야.', delta: 3 },
+  식상: { label: '내가 챙기는 기운', detail: '내가 표현하고 챙기게 되는 상대. 주는 쪽이 나로 기울기 쉬워.', delta: 2 },
+  인성: { label: '나를 받아주는 기운', detail: '상대가 나를 받아주고 채워주는 흐름. 편안함이 먼저 오는 조합.', delta: 6 },
+  재성: { label: '내가 주도하는 기운', detail: '내가 주도하고 갖고 싶어지는 상대. 마음이 앞서 조급해질 수 있어.', delta: 5 },
+  관성: { label: '나를 긴장시키는 기운', detail: '상대가 나를 이끌고 규정하는 흐름. 끌림은 강한데 눈치를 보게 돼.', delta: 5 },
+};
+
+export interface CompatFact {
+  key: string;
+  title: string;
+  detail: string;
+  delta: number;
+}
+
+export interface Compat {
+  /** 궁합 흐름 지수 20~95 — v0 휴리스틱. '점수'가 아니라 '흐름 지수'로만 표기 */
+  index: number;
+  relation: Relation;
+  facts: CompatFact[];
+  myDayGan: string;
+  theirDayGan: string;
+}
+
+export function dominantElement(c: Chart): Element {
+  return [...ELEMENT_ORDER].sort((a, b) => c.elements[b] - c.elements[a])[0];
+}
+
+function clamp(n: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, n));
+}
+
+/** 두 원국의 궁합 팩트. 계산은 표(合·沖·三合·相生相剋)로만 하고 해석 문장은 팩트에 붙는 고정 번역이다. */
+export function computeCompat(me: Chart, them: Chart): Compat {
+  const facts: CompatFact[] = [];
+  let score = 50;
+  const mg = me.dayGan;
+  const tg = them.dayGan;
+  const mz = me.day.zhi;
+  const tz = them.day.zhi;
+  const myEl = GAN_ELEMENT[mg];
+  const theirEl = GAN_ELEMENT[tg];
+
+  const push = (f: CompatFact) => {
+    facts.push(f);
+    score += f.delta;
+  };
+
+  if (GAN_HAP[mg] === tg) {
+    push({ key: 'gan_hap', title: '일간 천간합', detail: `${GAN_KO[mg]}(${mg})과 ${GAN_KO[tg]}(${tg})은 합(合)을 이루는 짝이야. 처음부터 끌림이 생기기 쉬운 조합.`, delta: 15 });
+  } else if (GAN_CHUNG[mg] === tg) {
+    push({ key: 'gan_chung', title: '일간 충', detail: `${GAN_KO[mg]}(${mg})과 ${GAN_KO[tg]}(${tg})은 충(沖) 관계야. 자극은 강한데 부딪힘도 잦아.`, delta: -10 });
+  }
+
+  const rel = relationOf(myEl, theirEl);
+  push({ key: 'relation', title: `일간 관계 · ${RELATION_KO[rel].label}`, detail: `내 ${ELEMENT_KO[myEl]}(${myEl})에게 상대의 ${ELEMENT_KO[theirEl]}(${theirEl})은 ${rel}의 흐름. ${RELATION_KO[rel].detail}`, delta: RELATION_KO[rel].delta });
+
+  if (ZHI_HAP[mz] === tz) {
+    push({ key: 'zhi_hap', title: '일지 육합', detail: `${ZHI_KO[mz]}(${mz})와 ${ZHI_KO[tz]}(${tz})는 육합. 일상의 리듬이 맞아서 같이 있는 시간이 편한 조합이야.`, delta: 15 });
+  } else if (ZHI_CHUNG[mz] === tz) {
+    push({ key: 'zhi_chung', title: '일지 충', detail: `${ZHI_KO[mz]}(${mz})와 ${ZHI_KO[tz]}(${tz})는 충. 생활 리듬과 반응 속도가 어긋나기 쉬워서, 오해가 쌓이기 전에 말로 풀어야 하는 조합.`, delta: -15 });
+  } else if (mz !== tz && SAMHAP[mz] === SAMHAP[tz]) {
+    push({ key: 'zhi_samhap', title: '일지 삼합', detail: `둘 다 ${ELEMENT_KO[SAMHAP[mz]]}(${SAMHAP[mz]}) 방향의 삼합 기운. 목표가 같으면 오래 가는 조합이야.`, delta: 10 });
+  }
+
+  const my = me.year.zhi;
+  const ty = them.year.zhi;
+  if (ZHI_HAP[my] === ty) {
+    push({ key: 'year_hap', title: '띠 합', detail: `${ZHI_KO[my]}띠와 ${ZHI_KO[ty]}띠는 합. 첫인상에서 거부감이 적은 조합.`, delta: 5 });
+  } else if (ZHI_CHUNG[my] === ty) {
+    push({ key: 'year_chung', title: '띠 충', detail: `${ZHI_KO[my]}띠와 ${ZHI_KO[ty]}띠는 충. 가치관이 다를 때 크게 느껴질 수 있어.`, delta: -5 });
+  }
+
+  const theirDominant = dominantElement(them);
+  const myLack = ELEMENT_ORDER.find((e) => me.elements[e] === 0);
+  if (myLack && theirDominant === myLack) {
+    push({ key: 'complement', title: '기운 보완', detail: `상대에게 강한 ${ELEMENT_KO[myLack]}(${myLack}) 기운이 내겐 비어 있는 기운이야. 서로 채우는 조합.`, delta: 10 });
+  }
+  const myDominant = dominantElement(me);
+  if (theirDominant === myDominant && me.elements[myDominant] / me.total >= 0.375 && them.elements[theirDominant] / them.total >= 0.375) {
+    push({ key: 'overheat', title: '같은 기운 과열', detail: `둘 다 ${ELEMENT_KO[myDominant]}(${myDominant}) 기운이 강해. 닮아서 편한데, 같은 방향으로 과열되기 쉬워.`, delta: -5 });
+  }
+
+  return { index: clamp(score, 20, 95), relation: rel, facts, myDayGan: mg, theirDayGan: tg };
+}

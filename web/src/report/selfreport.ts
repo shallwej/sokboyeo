@@ -1,0 +1,115 @@
+import type { QuestionKey } from './questions';
+
+export interface SelfOption {
+  value: number; // 0~4 신호 강도
+  label: string;
+  fact: string; // 리포트 팩트 문장
+}
+
+export interface SelfQuestion {
+  key: 'reply' | 'initiate' | 'meet' | 'last' | 'theirs';
+  label: string;
+  options: SelfOption[];
+}
+
+/** 셀프리포트 5문항 — 카톡 없이 정량 신호를 받는다. 선택형만(자유 텍스트 없음). */
+export const SELF_QUESTIONS: SelfQuestion[] = [
+  {
+    key: 'reply',
+    label: '답장은 보통 얼마 만에 와?',
+    options: [
+      { value: 4, label: '10분 안에', fact: '답장은 대체로 10분 안에 온다' },
+      { value: 3, label: '1시간 안에', fact: '답장은 대체로 1시간 안에 온다' },
+      { value: 2, label: '몇 시간 뒤', fact: '답장은 보통 몇 시간 뒤에 온다' },
+      { value: 1, label: '하루 이상', fact: '답장이 하루 이상 걸리는 편이다' },
+      { value: 2, label: '들쭉날쭉', fact: '답장 속도가 들쭉날쭉하다' },
+    ],
+  },
+  {
+    key: 'initiate',
+    label: '먼저 연락하는 쪽은?',
+    options: [
+      { value: 0, label: '거의 나', fact: '먼저 연락하는 쪽은 거의 나다' },
+      { value: 1, label: '나 쪽으로 6:4', fact: '먼저 연락은 나 쪽으로 6:4 정도다' },
+      { value: 2, label: '반반', fact: '먼저 연락은 반반이다' },
+      { value: 3, label: '상대 쪽으로 6:4', fact: '먼저 연락은 상대 쪽으로 6:4 정도다' },
+      { value: 4, label: '거의 상대', fact: '먼저 연락하는 쪽은 거의 상대다' },
+    ],
+  },
+  {
+    key: 'meet',
+    label: '최근 2주 안에 단둘이 만났어?',
+    options: [
+      { value: 4, label: '상대가 제안해서 만남', fact: '최근 2주 안에 상대의 제안으로 단둘이 만났다' },
+      { value: 3, label: '내가 제안해서 만남', fact: '최근 2주 안에 내 제안으로 단둘이 만났다' },
+      { value: 2, label: '여럿이서만', fact: '최근 2주 안에는 여럿이서만 봤다' },
+      { value: 0, label: '안 만남', fact: '최근 2주 안에 만난 적이 없다' },
+    ],
+  },
+  {
+    key: 'last',
+    label: '마지막으로 만난 지 얼마나 됐어?',
+    options: [
+      { value: 4, label: '3일 이내', fact: '마지막 만남은 3일 이내다' },
+      { value: 3, label: '1주 정도', fact: '마지막 만남은 1주 전쯤이다' },
+      { value: 2, label: '2주 정도', fact: '마지막 만남은 2주 전쯤이다' },
+      { value: 1, label: '한 달 이상', fact: '마지막 만남이 한 달 넘게 지났다' },
+      { value: 0, label: '아직 만난 적 없음', fact: '아직 단둘이 만난 적은 없다' },
+    ],
+  },
+  {
+    key: 'theirs',
+    label: '최근 2주, 상대가 먼저 연락한 횟수는?',
+    options: [
+      { value: 0, label: '0번', fact: '최근 2주 동안 상대가 먼저 연락한 적은 없다' },
+      { value: 1, label: '1~2번', fact: '최근 2주 동안 상대가 먼저 연락한 건 1~2번이다' },
+      { value: 3, label: '3~5번', fact: '최근 2주 동안 상대가 먼저 연락한 건 3~5번이다' },
+      { value: 4, label: '6번 이상', fact: '최근 2주 동안 상대가 먼저 연락한 게 6번이 넘는다' },
+    ],
+  },
+];
+
+export type SelfAnswers = Partial<Record<SelfQuestion['key'], number>>; // option index
+
+export interface SelfReport {
+  answers: SelfAnswers;
+  facts: string[];
+  /** 신호 지수 0~100 */
+  signalIndex: number;
+  flags: string[];
+}
+
+export function scoreSelfReport(answers: SelfAnswers): SelfReport {
+  let sum = 0;
+  let max = 0;
+  const facts: string[] = [];
+  const picked: Partial<Record<SelfQuestion['key'], SelfOption>> = {};
+  for (const q of SELF_QUESTIONS) {
+    const idx = answers[q.key];
+    max += 4;
+    if (idx === undefined) continue;
+    const opt = q.options[idx];
+    picked[q.key] = opt;
+    sum += opt.value;
+    facts.push(opt.fact);
+  }
+  const flags: string[] = [];
+  if (picked.initiate?.value === 0 && picked.theirs?.value === 0) flags.push('일방 신호');
+  if (picked.meet?.value === 4 || picked.theirs?.value === 4) flags.push('행동 신호 있음');
+  if (picked.last !== undefined && picked.last.value <= 1) flags.push('정체 구간');
+  if (picked.reply?.label === '들쭉날쭉') flags.push('리듬 불안정');
+  return { answers, facts, signalIndex: max ? Math.round((sum / max) * 100) : 0, flags };
+}
+
+export type Stage = '관심' | '만남' | '관계' | '결단' | '정리';
+
+export function estimateStage(sr: SelfReport, question: QuestionKey): { current: Stage; note: string } {
+  const last = sr.answers.last;
+  const meet = sr.answers.meet;
+  const neverMet = last === 4 || meet === 3;
+  if (question === 'cooling' && sr.signalIndex < 30) return { current: '정리', note: '신호가 낮고 식음이 느껴지는 구간. 판독보다 정리 기준이 먼저야.' };
+  if (neverMet) return { current: '관심', note: '아직 단둘이 만난 적이 없는 탐색 구간. 연락 리듬이 유일한 단서야.' };
+  if (question === 'confess' && sr.signalIndex >= 60) return { current: '결단', note: '만남과 연락이 이어지고 있어 이름을 붙일지 정할 구간.' };
+  if (meet === 0 && sr.signalIndex >= 50) return { current: '관계', note: '상대 쪽에서도 만남이 나오는 구간. 이미 호감 탐색은 지났어.' };
+  return { current: '만남', note: '만남은 있었지만 리듬이 굳지 않은 구간. 다음 2주가 방향을 정해.' };
+}

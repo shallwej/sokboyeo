@@ -1,0 +1,3 @@
+dist-artifact
+node_modules
+.env
